@@ -12,7 +12,7 @@
   uint8_t iodir=0;
     
     
-TwoWire myWire(&sercom2, 4, 3);
+TwoWire myWire(&sercom2, P1_pin, P2_pin);
 
 Adafruit_MCP23008 mcp;
 
@@ -25,6 +25,8 @@ _ID=getAdapterID();
 _ID=0;
 #endif
  
+
+// TODO: when _ID&1 == 0, use software I2C using P1_pin as SDA and P2_pin as SCL.
 
   
 // Init Magnet Shield
@@ -193,8 +195,8 @@ void myWireBegin()
 {
  myWire.begin();
   // Assign pins 4 & 3 to SERCOM functionality
-  pinPeripheral(4, PIO_SERCOM_ALT);
-  pinPeripheral(3, PIO_SERCOM_ALT);
+  pinPeripheral(P1_pin, PIO_SERCOM_ALT);
+  pinPeripheral(P2_pin, PIO_SERCOM_ALT);
   }
   
   

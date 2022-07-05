@@ -114,6 +114,9 @@ void pinStr( uint32_t ulPin, unsigned strength) // works like pinMode(), but to 
 
 
 // setting AnalogRead parameters , code by adamgarbo 
+
+// TODO -- calibrate opendrop's calibration needs
+
 void configureAdc()
 {
   ADC->CTRLA.bit.ENABLE = 0;                      // Disable ADC

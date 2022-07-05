@@ -2,9 +2,7 @@
 
 Open Source Digital Microfluidics Bio Lab
 
-### Don't click on the files!
-Click on the "Download ZIP" Button to the right.
-Then unpack the archive.
+### Brisk-lab's v4.0 OpenDrop
 
 ### Open Source Digital Microfluidics Bio Lab
 

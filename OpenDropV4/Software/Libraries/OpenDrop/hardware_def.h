@@ -1,8 +1,8 @@
 //OpenDrop V4.1 Hardware Definitions
 
 
-#define board_ID	0x1     // 0x1=V42 ,OpenDrop ID = board_ID higher 4 bits, Adapter ID lower 4 bits 
-#define OpenDropV40_downgrade 0  //use for V40
+#define board_ID	0x0     // 0x1=V42 ,OpenDrop ID = board_ID higher 4 bits, Adapter ID lower 4 bits 
+#define OpenDropV40_downgrade 1  //use for V40
 
 #define FluxlPad_width 16
 #define FluxlPad_heigth 8
@@ -56,7 +56,7 @@
 #define LED_Rx_pin         25           // Rx LED
 
 #define sound_flag true           // Make Sound
-#define feedback_flag false           // Read pad feedback
+#define feedback_flag true           // Read pad feedback
 #define closedloop_flag false        // Use Feedback information for close loop control (experimental)
         
 

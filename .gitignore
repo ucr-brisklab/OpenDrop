@@ -19,3 +19,6 @@ _autosave-*
 *.xml
 *.csv
 
+# auto generated files:
+*.DS_Store
+
