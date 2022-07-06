@@ -3,6 +3,7 @@
 
 #define board_ID	0x0     // 0x1=V42 ,OpenDrop ID = board_ID higher 4 bits, Adapter ID lower 4 bits 
 #define OpenDropV40_downgrade 1  //use for V40
+#define magnet_withv40 1 // if using OpenDropV4.0 with a V4.1 magnet module adapter.
 
 #define FluxlPad_width 16
 #define FluxlPad_heigth 8
@@ -90,8 +91,7 @@ const byte FluxelID [16][8] PROGMEM ={
 {124,67,125,66,126,65,127,64}};
 
 
-
- const byte pad_lookup_x [64] PROGMEM = {
+const byte pad_lookup_x [64] PROGMEM = {
 0,0,0,0,1,1,1,1,
 2,2,2,2,3,3,3,3,
 4,4,4,4,5,5,5,5,
