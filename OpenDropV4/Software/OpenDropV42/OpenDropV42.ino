@@ -189,16 +189,13 @@ void loop() {
 
     if ((myDrop->position_x() == 5) && (myDrop->position_y() == 2))
     {
-      Serial.print("activating magnet button\n");
       if (Magnet2_state) {
         OpenDropDevice.set_Magnet(1, LOW);
         Magnet2_state = false;
-        Serial.print("deactivated magnet\n");
       }
       else {
         OpenDropDevice.set_Magnet(1, HIGH);
         Magnet2_state = true;
-        Serial.print("activated magenet\n");
       }
       while (!digitalRead(SW2_pin));
     }

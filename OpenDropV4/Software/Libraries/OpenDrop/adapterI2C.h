@@ -13,6 +13,7 @@
 
 
 
+
 #define ADAPTER_IODIR 0x00
 #define ADAPTER_GPIO 0x01
 #define ADAPTER_GETTEMP_H_1 0x02
