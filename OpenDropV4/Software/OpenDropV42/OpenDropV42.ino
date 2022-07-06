@@ -68,7 +68,6 @@ void setup() {
   OpenDropDevice.update();
 
   del_counter = millis();
-
 }
 
 
