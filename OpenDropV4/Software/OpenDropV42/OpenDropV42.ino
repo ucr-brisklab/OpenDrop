@@ -83,8 +83,6 @@ void setup() {
   OpenDropDevice.update();
 
   del_counter = millis();
-<<<<<<< Updated upstream
-=======
 
   Serial.println("setting up timer");
 
@@ -142,7 +140,6 @@ void setup() {
   zerotimer.setCallback(true, TC_CALLBACK_CC_CHANNEL0, blinkLED);
   zerotimer.enable(true);
 
->>>>>>> Stashed changes
 }
 
 
