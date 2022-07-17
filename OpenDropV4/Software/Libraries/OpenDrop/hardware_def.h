@@ -59,6 +59,7 @@
 #define sound_flag true           // Make Sound
 #define feedback_flag true           // Read pad feedback
 #define closedloop_flag false        // Use Feedback information for close loop control (experimental)
+#define feedback_control_flag false  // Use Feedback information for close loop control (experimental)
         
 
 #define STBY_pin         6           // MCP23008 Pin

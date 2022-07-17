@@ -21,7 +21,7 @@ bool Fluxls[FluxlPad_width][FluxlPad_heigth];
 bool Fluxls_feedback[FluxlPad_width][FluxlPad_heigth];
 byte pad_feedback[128];
 
-#define SETTING_Size 6
+#define SETTING_Size 7
 typedef struct {
   int value[SETTING_Size];
 } EEprom;
@@ -44,6 +44,8 @@ long VOLTAGE_set_value;
 
 bool sound = sound_flag;
 bool feedback = feedback_flag;
+bool feedback_control = feedback_control_flag;
+bool control = false;
 
 // used for SPI bitbang
 byte cmd_byte0 =
@@ -788,10 +790,10 @@ void OpenDrop::begin(char code_str[]) {
 }
 
 void OpenDrop::update_Drops(void) {
-
+  control = true;
   for (int i = 0; i < this->drop_count; i++) {
 
-    if (closedloop_flag) {
+    if (feedback_control) {
 
       if ((drops[i].position_x() != drops[i].next_x()) |
           (drops[i].position_y() != drops[i].next_y())) {
@@ -803,7 +805,10 @@ void OpenDrop::update_Drops(void) {
                  &FluxelID[drops[i].next_x()][drops[i].next_y()])] == 1)) {
           drops[i].begin(drops[i].next_x(),
                          drops[i].next_y()); // if at position
-        };                                   // if not there
+        }                                   // if not there
+        else {
+          control = false;
+        }
 
       }; // if feedback
 
@@ -822,6 +827,14 @@ void OpenDrop::update(void) {
   };
 
   this->drive_Fluxels();
+
+
+  if (feedback_control) {
+    while (!control) {
+      this->update_Drops();
+      this->drive_Fluxels();
+    }
+  }
 
   this->update_Display();
 
@@ -1434,6 +1447,7 @@ void Menu(OpenDrop &theOpenDrop) {
   bool set_sound = sound;
   bool nav_release = true;
   bool but_release = false;
+  bool set_feedback_control = feedback_control;
 
   display.dim(false);
 
@@ -1466,12 +1480,17 @@ void Menu(OpenDrop &theOpenDrop) {
       display.print("FEEDBACK: ON");
     else
       display.print("FEEDBACK: OFF");
+    display.setCursor(15, 52);
+    if (set_feedback_control == true)
+      display.print("FEEDBACK CONTROL: ON");
+    else
+      display.print("FEEDBACK CONTROL: OFF");
 
     if (!set_confirm) {
-      display.setCursor(15, 55);
+      display.setCursor(15, 65);
       display.println("SET:      CANCEL");
     } else {
-      display.setCursor(15, 55);
+      display.setCursor(15, 65);
       display.println("SET:      OK");
     }
 
@@ -1542,6 +1561,14 @@ void Menu(OpenDrop &theOpenDrop) {
 
     case 6:
       if (JOY_value < 300)
+        set_feedback_control = true;
+      if ((JOY_value > 600) && (JOY_value < 730))
+        set_feedback_control = false;
+
+      break;
+
+    case 7:
+      if (JOY_value < 300)
         set_confirm = true;
       if ((JOY_value > 600) && (JOY_value < 730))
         set_confirm = false;
@@ -1563,6 +1590,7 @@ void Menu(OpenDrop &theOpenDrop) {
     settings.value[2] = f;
     settings.value[3] = set_sound;
     settings.value[4] = set_feedback;
+    settings.value[6] = set_feedback_control;
     my_flash_store.write(settings);
 
     HV_set_ok = false;
