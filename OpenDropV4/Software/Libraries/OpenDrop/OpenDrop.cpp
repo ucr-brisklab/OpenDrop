@@ -46,6 +46,7 @@ bool sound = sound_flag;
 bool feedback = feedback_flag;
 bool feedback_control = feedback_control_flag;
 bool control = false;
+bool debounce = false;
 
 // used for SPI bitbang
 byte cmd_byte0 =
@@ -1476,21 +1477,21 @@ void Menu(OpenDrop &theOpenDrop) {
     else
       display.print("SOUND:    OFF");
     display.setCursor(15, 42);
-    if (set_feedback == true)
-      display.print("FEEDBACK: ON");
-    else
+    if (!set_feedback && !set_feedback_control)
       display.print("FEEDBACK: OFF");
-    display.setCursor(15, 52);
-    if (set_feedback_control == true)
-      display.print("FEEDBACK CONTROL: ON");
-    else
-      display.print("FEEDBACK CONTROL: OFF");
+    else if (set_feedback && !set_feedback_control)
+      display.print("FEEDBACK: ON");
+    else if (set_feedback && set_feedback_control)
+      display.print("FEEDBACK: CTRL");
+    else {
+      display.print("FEEDBACK: ??");
+    }
 
     if (!set_confirm) {
-      display.setCursor(15, 65);
+      display.setCursor(15, 55);
       display.println("SET:      CANCEL");
     } else {
-      display.setCursor(15, 65);
+      display.setCursor(15, 55);
       display.println("SET:      OK");
     }
 
@@ -1519,6 +1520,10 @@ void Menu(OpenDrop &theOpenDrop) {
       but_release = true;
     if (!digitalRead(SW1_pin) && but_release)
       confirm = true;
+
+    if (JOY_value > 950) {
+      debounce = false;
+    }
 
     switch (menu_position) {
     case 1:
@@ -1552,22 +1557,29 @@ void Menu(OpenDrop &theOpenDrop) {
       break;
 
     case 5:
-      if (JOY_value < 300)
-        set_feedback = true;
-      if ((JOY_value > 600) && (JOY_value < 730))
-        set_feedback = false;
-
+      if (!debounce) {
+        if (JOY_value < 300) {
+          if (set_feedback) {
+            set_feedback_control = true;
+          }
+          else {
+            set_feedback = true;
+          }
+          debounce = true;
+        }
+        if ((JOY_value > 600) && (JOY_value < 730)) {
+          if (set_feedback_control) {
+            set_feedback_control = false;
+          }
+          else {
+            set_feedback = false;
+          }
+          debounce = true;
+        }
+      }
       break;
 
     case 6:
-      if (JOY_value < 300)
-        set_feedback_control = true;
-      if ((JOY_value > 600) && (JOY_value < 730))
-        set_feedback_control = false;
-
-      break;
-
-    case 7:
       if (JOY_value < 300)
         set_confirm = true;
       if ((JOY_value > 600) && (JOY_value < 730))
