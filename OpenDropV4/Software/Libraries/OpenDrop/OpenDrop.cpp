@@ -829,14 +829,14 @@ void OpenDrop::update(void) {
 
   this->drive_Fluxels();
 
-
+/*
   if (feedback_control) {
     while (!control) {
       this->update_Drops();
       this->drive_Fluxels();
     }
   }
-
+*/
   this->update_Display();
 
   if (sound) {
