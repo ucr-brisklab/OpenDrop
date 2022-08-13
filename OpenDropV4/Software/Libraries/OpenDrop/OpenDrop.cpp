@@ -1597,6 +1597,7 @@ void Menu(OpenDrop &theOpenDrop) {
     theOpenDrop.set_voltage(v, AC_state, f);
     sound = set_sound;
     feedback = set_feedback;
+    feedback_control = set_feedback_control;
     settings.value[0] = AC_state;
     settings.value[1] = v;
     settings.value[2] = f;
