@@ -819,7 +819,7 @@ void OpenDrop::update_Drops(void) {
 }
 
 void OpenDrop::update(void) {
-
+  int breakout = 0;
   clear_Fluxels(); // clear Fluxel Array
 
   // Fill Fluxel Array
@@ -829,14 +829,21 @@ void OpenDrop::update(void) {
 
   this->drive_Fluxels();
 
-/*
+
   if (feedback_control) {
     while (!control) {
+      clear_Fluxels();
+      for (int i = 0; i < this->drop_count; i++) {
+        Fluxls[drops[i].next_x()][drops[i].next_y()] = true;
+      };
       this->update_Drops();
       this->drive_Fluxels();
+      if (breakout >= 5) {
+        break;
+      }
     }
   }
-*/
+
   this->update_Display();
 
   if (sound) {
