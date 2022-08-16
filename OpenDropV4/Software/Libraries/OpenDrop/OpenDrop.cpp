@@ -841,6 +841,7 @@ void OpenDrop::update(void) {
       if (breakout >= 5) {
         break;
       }
+      breakout++;
     }
   }
 
