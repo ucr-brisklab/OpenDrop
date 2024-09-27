@@ -2,7 +2,7 @@
   This file is part of the OpenDrop library
   by Urs Gaudenz, GaudiLabs 2022
   --------------------------------------------------------------------*/
-
+ //test change
 #include "OpenDrop.h"
 #include "Adafruit_GFX.h"
 #include "FlashStorage.h"
@@ -21,7 +21,7 @@ bool Fluxls[FluxlPad_width][FluxlPad_heigth];
 bool Fluxls_feedback[FluxlPad_width][FluxlPad_heigth];
 byte pad_feedback[128];
 
-#define SETTING_Size 6
+#define SETTING_Size 7
 typedef struct {
   int value[SETTING_Size];
 } EEprom;
@@ -44,6 +44,9 @@ long VOLTAGE_set_value;
 
 bool sound = sound_flag;
 bool feedback = feedback_flag;
+bool feedback_control = feedback_control_flag;
+bool control = false;
+bool debounce = false;
 
 // used for SPI bitbang
 byte cmd_byte0 =
@@ -788,10 +791,10 @@ void OpenDrop::begin(char code_str[]) {
 }
 
 void OpenDrop::update_Drops(void) {
-
+  control = true;
   for (int i = 0; i < this->drop_count; i++) {
 
-    if (closedloop_flag) {
+    if (feedback_control) {
 
       if ((drops[i].position_x() != drops[i].next_x()) |
           (drops[i].position_y() != drops[i].next_y())) {
@@ -803,7 +806,10 @@ void OpenDrop::update_Drops(void) {
                  &FluxelID[drops[i].next_x()][drops[i].next_y()])] == 1)) {
           drops[i].begin(drops[i].next_x(),
                          drops[i].next_y()); // if at position
-        };                                   // if not there
+        }                                   // if not there
+        else {
+          control = false;
+        }
 
       }; // if feedback
 
@@ -813,7 +819,7 @@ void OpenDrop::update_Drops(void) {
 }
 
 void OpenDrop::update(void) {
-
+  int breakout = 0;
   clear_Fluxels(); // clear Fluxel Array
 
   // Fill Fluxel Array
@@ -822,6 +828,22 @@ void OpenDrop::update(void) {
   };
 
   this->drive_Fluxels();
+
+
+  if (feedback_control) {
+    while (!control) {
+      clear_Fluxels();
+      for (int i = 0; i < this->drop_count; i++) {
+        Fluxls[drops[i].next_x()][drops[i].next_y()] = true;
+      };
+      this->update_Drops();
+      this->drive_Fluxels();
+      if (breakout >= 5) {
+        break;
+      }
+      breakout++;
+    }
+  }
 
   this->update_Display();
 
@@ -1434,6 +1456,7 @@ void Menu(OpenDrop &theOpenDrop) {
   bool set_sound = sound;
   bool nav_release = true;
   bool but_release = false;
+  bool set_feedback_control = feedback_control;
 
   display.dim(false);
 
@@ -1462,10 +1485,15 @@ void Menu(OpenDrop &theOpenDrop) {
     else
       display.print("SOUND:    OFF");
     display.setCursor(15, 42);
-    if (set_feedback == true)
-      display.print("FEEDBACK: ON");
-    else
+    if (!set_feedback && !set_feedback_control)
       display.print("FEEDBACK: OFF");
+    else if (set_feedback && !set_feedback_control)
+      display.print("FEEDBACK: ON");
+    else if (set_feedback && set_feedback_control)
+      display.print("FEEDBACK: CTRL");
+    else {
+      display.print("FEEDBACK: ??");
+    }
 
     if (!set_confirm) {
       display.setCursor(15, 55);
@@ -1501,6 +1529,10 @@ void Menu(OpenDrop &theOpenDrop) {
     if (!digitalRead(SW1_pin) && but_release)
       confirm = true;
 
+    if (JOY_value > 950) {
+      debounce = false;
+    }
+
     switch (menu_position) {
     case 1:
       if (JOY_value < 300)
@@ -1533,11 +1565,26 @@ void Menu(OpenDrop &theOpenDrop) {
       break;
 
     case 5:
-      if (JOY_value < 300)
-        set_feedback = true;
-      if ((JOY_value > 600) && (JOY_value < 730))
-        set_feedback = false;
-
+      if (!debounce) {
+        if (JOY_value < 300) {
+          if (set_feedback) {
+            set_feedback_control = true;
+          }
+          else {
+            set_feedback = true;
+          }
+          debounce = true;
+        }
+        if ((JOY_value > 600) && (JOY_value < 730)) {
+          if (set_feedback_control) {
+            set_feedback_control = false;
+          }
+          else {
+            set_feedback = false;
+          }
+          debounce = true;
+        }
+      }
       break;
 
     case 6:
@@ -1558,11 +1605,13 @@ void Menu(OpenDrop &theOpenDrop) {
     theOpenDrop.set_voltage(v, AC_state, f);
     sound = set_sound;
     feedback = set_feedback;
+    feedback_control = set_feedback_control;
     settings.value[0] = AC_state;
     settings.value[1] = v;
     settings.value[2] = f;
     settings.value[3] = set_sound;
     settings.value[4] = set_feedback;
+    settings.value[6] = set_feedback_control;
     my_flash_store.write(settings);
 
     HV_set_ok = false;

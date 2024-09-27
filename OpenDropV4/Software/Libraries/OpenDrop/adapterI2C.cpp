@@ -3,9 +3,9 @@
   by Urs Gaudenz, GaudiLabs 2022
   --------------------------------------------------------------------*/
 
+#include <adapterI2C.h>
 #include "wiring_private.h" // pinPeripheral() function
 #include <Wire.h>
-#include <adapterI2C.h>
 
 #include "hardware_def.h"
 

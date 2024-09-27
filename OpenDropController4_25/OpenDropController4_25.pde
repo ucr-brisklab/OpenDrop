@@ -421,12 +421,13 @@ void old_transmit()
 void readControlData() 
 {print("BoardID: "); println(control_data_in[23]);
       switch(control_data_in[23]) {
-  case 0: 
-    version_str="OpenDrop: V4.1"; 
-    if (arrayLayout=="electrodes_magnet.json") arrayLayout="electrodes.json";
-    showTempUI=false;
-    showFeedbackUI=false;
-    break;
+  //case 0: 
+  //  version_str="OpenDrop: V4.1"; 
+  //  if (arrayLayout=="electrodes_magnet.json") arrayLayout="electrodes.json";
+  //  showTempUI=false;
+  //  showFeedbackUI=false;
+  //  break;
+  case 0:
   case 1: 
     version_str="OpenDrop: V4.1 \n magnet"; 
     if (arrayLayout=="electrodes.json") arrayLayout="electrodes_magnet.json";
